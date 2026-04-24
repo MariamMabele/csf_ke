@@ -64,7 +64,9 @@ before_tests = "csf_ke.setup.utils.before_tests"
 
 doctype_js = {
 	"Customer": "csf_ke/overrides/customer.js",
-	"Landed Cost Voucher": "csf_ke/landed_cost_voucher.js",
+	"Company": "csf_ke/company.js",
+	"Purchase Invoice": "csf_ke/purchase_invoice.js",
+	"Sales Invoice": "csf_ke/sales_invoice.js",
 }
 
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -141,7 +143,14 @@ after_migrate = "csf_ke.csf_ke.doctype.tims_hscode.tims_hscode.insert_new_record
 
 doc_events = {
 	"Purchase Receipt": {"on_submit": "csf_ke.csf_ke.doctype.api.update_item_price_list.update_item_prices"},
-	"Purchase Invoice": {"on_submit": "csf_ke.csf_ke.doctype.api.update_item_price_list.update_item_prices"},
+	"Purchase Invoice": {
+		"validate": "csf_ke.custom_api.prepare_purchase_withholding_values",
+		"on_submit": [
+			"csf_ke.csf_ke.doctype.api.update_item_price_list.update_item_prices",
+			"csf_ke.custom_api.make_purchase_withholding_journal_entries",
+		],
+		"on_cancel": "csf_ke.custom_api.cancel_purchase_withholding_journal_entries",
+	},
 	"Item Group": {"before_save": "csf_ke.csf_ke.utils.get_tims_hscode.validate_mandatory_hscode"},
 	"Customer": {"before_save": "csf_ke.csf_ke.overrides.customer.validate_customer_kra"},
 	"Sales Order": {
@@ -149,8 +158,13 @@ doc_events = {
 		"on_submit": "csf_ke.csf_ke.utils.item_price.update_item_price",
 	},
 	"Sales Invoice": {
+		"validate": "csf_ke.custom_api.prepare_sales_withholding_values",
 		"before_submit": "csf_ke.csf_ke.overrides.sales_doc.validate_customer_kra",
-		"on_submit": "csf_ke.csf_ke.utils.item_price.update_item_price",
+		"on_submit": [
+			"csf_ke.csf_ke.utils.item_price.update_item_price",
+			"csf_ke.custom_api.make_sales_withholding_journal_entries",
+		],
+		"on_cancel": "csf_ke.custom_api.cancel_sales_withholding_journal_entries",
 	},
 	"Delivery Note": {
 		"on_submit": "csf_ke.csf_ke.utils.item_price.update_item_price",
