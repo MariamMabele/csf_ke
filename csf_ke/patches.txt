@@ -5,3 +5,4 @@ csf_ke.csf_ke.patches.create_price_list
 
 [post_model_sync]
 csf_ke.csf_ke.patches.withholding_tax_and_vat
+csf_ke.csf_ke.patches.create_kenya_postal_codes
