@@ -1,3 +1,4 @@
+import json
 import frappe
 from frappe import _
 from frappe.utils import cint, flt
@@ -53,6 +54,48 @@ def _get_invoice_withholding_vat_rate(doctype, party):
 	return flt(frappe.get_value(party_doctype, party, "withholding_vat_rate") or 0)
 
 
+def _has_tax_value(value):
+	if isinstance(value, dict):
+		return flt(value.get("tax_rate")) or flt(value.get("tax_amount"))
+
+	return isinstance(value, (list, tuple)) and len(value) > 1 and (flt(value[0]) or flt(value[1]))
+
+
+def _get_withholding_vat_base(doc):
+	vat_rows = [
+		tax
+		for tax in doc.taxes
+		if "vat" in "{0} {1}".format(tax.account_head or "", tax.description or "").lower()
+		and flt(tax.base_tax_amount)
+	]
+	if not vat_rows:
+		return 0
+
+	base = 0
+	for item in doc.items:
+		template = (item.item_tax_template or "").lower()
+		if "exempt" in template or "zero" in template:
+			continue
+
+		found_tax_detail = False
+		has_vat = False
+		for tax in vat_rows:
+			try:
+				detail = json.loads(tax.item_wise_tax_detail or "{}")
+			except Exception:
+				detail = {}
+
+			for key in (item.item_code, item.item_name):
+				if key and key in detail:
+					found_tax_detail = True
+					has_vat = has_vat or _has_tax_value(detail[key])
+
+		if has_vat or not found_tax_detail:
+			base += flt(item.base_net_amount)
+
+	return base
+
+
 def _set_item_withholding_tax_values(doc, item_rate_field):
 	for item in doc.items:
 		if item.item_code and not flt(item.withholding_tax_rate):
@@ -86,13 +129,17 @@ def _create_journal_entry(company, posting_date, accounts, user_remark, auto_sub
 
 def prepare_purchase_withholding_values(doc, method=None):
 	doc.withholding_vat_rate = _get_invoice_withholding_vat_rate(doc.doctype, doc.supplier)
-	doc.withholding_vat_amount = flt(doc.base_net_total) * flt(doc.withholding_vat_rate) / 100
+	doc.withholding_vat_amount = (
+		flt(_get_withholding_vat_base(doc)) * flt(doc.withholding_vat_rate) / 100
+	)
 	_set_item_withholding_tax_values(doc, "withholding_tax_rate_on_purchase")
 
 
 def prepare_sales_withholding_values(doc, method=None):
 	doc.withholding_vat_rate = _get_invoice_withholding_vat_rate(doc.doctype, doc.customer)
-	doc.withholding_vat_amount = flt(doc.base_net_total) * flt(doc.withholding_vat_rate) / 100
+	doc.withholding_vat_amount = (
+		flt(_get_withholding_vat_base(doc)) * flt(doc.withholding_vat_rate) / 100
+	)
 	_set_item_withholding_tax_values(doc, "withholding_tax_rate_on_sales")
 
 
