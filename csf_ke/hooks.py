@@ -32,10 +32,10 @@ fixtures = [
 	},
 ]
 
-process_soa_html = {
-	"General Ledger": ["csf_ke/templates/dynamic_psoa_gl.html"],
-	"Accounts Receivable": ["csf_ke/templates/dynamic_psoa_ar.html"],
-}
+# process_soa_html = {
+# 	"General Ledger": ["csf_ke/templates/dynamic_psoa_gl.html"],
+# 	"Accounts Receivable": ["csf_ke/templates/dynamic_psoa_ar.html"],
+# }
 
 before_tests = "csf_ke.setup.utils.before_tests"
 
@@ -172,6 +172,7 @@ doc_events = {
 		"on_submit": "csf_ke.csf_ke.utils.item_price.update_item_price",
 	},
 	"Job Card": {"before_submit": "csf_ke.csf_ke.overrides.job_card.before_submit"},
+	"Salary Slip": {"before_save": "csf_ke.csf_ke.overrides.salary_slip.set_employee_bank_details"},
 }
 # Scheduled Tasks
 # ---------------
