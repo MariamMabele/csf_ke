@@ -1,0 +1,132 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2026-05-22 12:53:40.922230",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "queue_status",
+  "disabled",
+  "column_break_ahaa",
+  "duplicate_detection_window",
+  "section_break_lkys",
+  "current_job",
+  "next_job",
+  "column_break_cfis",
+  "last_job"
+ ],
+ "fields": [
+  {
+   "default": "Idle",
+   "fieldname": "queue_status",
+   "fieldtype": "Select",
+   "label": "Queue Status",
+   "options": "Idle\nRunning\nPaused\nStopped\nError"
+  },
+  {
+   "fieldname": "column_break_ahaa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "disabled",
+   "fieldtype": "Check",
+   "label": "Disabled"
+  },
+  {
+   "fieldname": "section_break_lkys",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "current_job",
+   "fieldtype": "Link",
+   "label": "Current Job",
+   "options": "eTims Job Queue"
+  },
+  {
+   "fieldname": "next_job",
+   "fieldtype": "Link",
+   "label": "Next Job",
+   "options": "eTims Job Queue"
+  },
+  {
+   "fieldname": "column_break_cfis",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "last_job",
+   "fieldtype": "Link",
+   "label": "Last Job",
+   "options": "eTims Job Queue"
+  },
+  {
+   "default": "300",
+   "fieldname": "duplicate_detection_window",
+   "fieldtype": "Duration",
+   "hide_days": 1,
+   "label": "Duplicate Detection Window"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-08-19 08:04:59.621005",
+ "modified_by": "Administrator",
+ "module": "eTims",
+ "name": "eTims Queue Manager",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Accounts Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Accounts User",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Sales User",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "rows_threshold_for_grid_search": 20,
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
